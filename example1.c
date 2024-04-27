@@ -69,6 +69,21 @@ STACK *createStack(int size){
     return stack;
 }
 
+void print_graph(GRAPH *graph)
+{
+    int i; 
+    for (i = 0; i <= graph->n; i++){
+        NODE *temp = graph->head[i];
+        printf("vertex %d: ", i);
+        while (temp) {
+            printf("%d ", temp->dest);
+            temp =temp->next;
+        }
+        printf("\n");
+    }
+}
+
+
 void push(int data,STACK *stack)
 {
     stack->top=stack->top+1;
@@ -150,11 +165,13 @@ int main(){
 
     GRAPH *graph = createGraph(vertexNumber);
     insertEdges(graph, edgeNumber, vertexNumber, fin);
+    printf("graf:\n");
+    print_graph(graph);
 
     int *reachArray = canBeReached(graph, vertexNumber);
 
 
-    for(int i=1; i<=vertexNumber; i++)
+    for(int i=0; i<=vertexNumber; i++)
         printf("%d ", reachArray[i]);
 
     return 0;
