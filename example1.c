@@ -8,8 +8,9 @@ typedef struct Node{
     int dest;
     struct Node *next;
 }NODE;
-/// pentru simplitate, folosim int uri pt a numi restaurantel/locatiile
-/// ex: 1 - restaurantul 1 si tot asa    
+
+// pentru simplitate, folosim int uri pt a numi restaurantel/locatiile
+// ex: 1 - restaurantul 1 si tot asa    
 
 typedef struct GRAPH{
     int n;
@@ -48,10 +49,10 @@ GRAPH *createGraph(int n){
     GRAPH *graph=malloc(sizeof(GRAPH));
 
     graph->n=n;
-    graph->head=malloc(sizeof(NODE *));
-    graph->nodeList=malloc(sizeof(int) *n);
+    graph->head=malloc(sizeof(NODE *) * n+1);
+    graph->nodeList=malloc(sizeof(int) *n+1);
 
-    for (int i=0;i<n;i++){
+    for (int i=0;i<=n;i++){
         graph->head[i]=NULL;
         graph->nodeList[i]=0;
     }   
@@ -64,6 +65,7 @@ STACK *createStack(int size){
     stack->array=malloc(size*sizeof(int));
     stack->top = -1;
     stack->size=size;
+
     return stack;
 }
 
@@ -75,76 +77,85 @@ void push(int data,STACK *stack)
 
 void DFS(GRAPH *graph,STACK *stack, int vertex)
 {
-    NODE *adjacencyList=graph->head[vertex];
-    
-    graph->nodeList[vertex]=1;
-    printf("%d ",vertex);
+    if(graph->head[vertex]!=NULL){
 
-    push(vertex,stack);
+        NODE *adjacencyList=graph->head[vertex];
+        graph->nodeList[vertex]=1;
+        push(vertex,stack);
 
-    while (adjacencyList != NULL){
-        int next=adjacencyList->dest;
+        while (adjacencyList != NULL){
+            int next=adjacencyList->dest;
 
-        if (graph->nodeList[next]==0)
-            DFS(graph, stack, next);
+            if (graph->nodeList[next]==0)
+                DFS(graph, stack, next);
 
-        adjacencyList = adjacencyList->next;
+            adjacencyList = adjacencyList->next;
+        }
+
+        free(adjacencyList);
     }
 }
 
 
-void insertEdges(GRAPH *graph,int edgeNumber,int vertexNumber)
+void insertEdges(GRAPH *graph,int edgeNumber,int vertexNumber, FILE *fin)
 {
     int src,dest;
     printf("adauga %d munchii (de la 1 la %d)\n", edgeNumber, vertexNumber);
 
     for (int i = 0; i < edgeNumber; i++){
-        scanf("%d %d", &src, &dest);
+        fscanf(fin ,"%d %d", &src, &dest);
         addEdge(graph, src, dest);
     }
 }
 
 
-void wipe(GRAPH *graph, int vertexNumber)
+void clearNodeList(GRAPH *graph, int vertexNumber)
 {
-    for (int i = 0; i < vertexNumber;i++){
+    for (int i = 1; i <= vertexNumber;i++){
         graph->nodeList[i] = 0;
     }
 }  
 
 
-int canBeReached(GRAPH *graph, int vertexNumber, STACK *stack1, STACK *stack2)// 0 sau 1 daca poate fi sau nu ajuns
+int *canBeReached(GRAPH *graph, int vertexNumber)// 0 sau 1 daca poate fi sau nu ajuns
 {
-    int *canBeReached = calloc(5, sizeof(int)); 
-    for (int i = 0; i < vertexNumber; i++) // aici i tine loc de numar adica de restaurant{for (int j = 0; j < 5; j++)
+    int *canBeReached = calloc(vertexNumber, sizeof(int)); 
+
+    for (int i = 1; i <= vertexNumber; i++) // aici i tine loc de numar adica de restaurant{for (int j = 0; j < 5; j++)
     {
-        DFS(graph, stack1, i);
-        printf("\n");
-        wipe(graph, vertexNumber);
-        for (int j = 0; j < vertexNumber; j++){
-            if ((stack1->array[i] == j) && (stack2->array[j] == i)){
-                canBeReached[i] = 1;
-                break;
-            }
-        }
+        STACK *stack = createStack(2*vertexNumber);
+
+        DFS(graph, stack, i);
+        clearNodeList(graph, vertexNumber);
+
+        if (stack->top >= 0)
+            canBeReached[i] = 1;
+    
     }
 
+    return canBeReached; 
 }
 
-int main()
-{
+int main(){
+
+    FILE *fin=fopen("input.txt","r");
+
     int vertexNumber, edgeNumber;
+
     printf("cate noduri are graful?");
-    scanf("%d", &vertexNumber);
+    fscanf(fin,"%d", &vertexNumber);
+
     printf("cate muchii are graful?");
-    scanf("%d", &edgeNumber);
+    fscanf(fin,"%d", &edgeNumber);
 
     GRAPH *graph = createGraph(vertexNumber);
-    STACK *stack1 = createStack(2 * vertexNumber);
-    STACK *stack2 = createStack(2 * vertexNumber);
+    insertEdges(graph, edgeNumber, vertexNumber, fin);
 
-    insertEdges(graph, edgeNumber, vertexNumber);
-    canBeReached(graph, vertexNumber, stack1, stack2);
+    int *reachArray = canBeReached(graph, vertexNumber);
+
+
+    for(int i=1; i<=vertexNumber; i++)
+        printf("%d ", reachArray[i]);
 
     return 0;
 }
