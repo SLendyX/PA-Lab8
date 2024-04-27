@@ -33,6 +33,13 @@ NODE *createNode(int dest){
     return node;
 }
 
+/**
+ * Adds an edge between two vertices in a graph.
+ * 
+ * @param graph The graph to add the edge to.
+ * @param src The source vertex.
+ * @param dest The destination vertex.
+ */
 void addEdge(GRAPH *graph, int src, int dest){
 
     NODE *node=createNode(dest);
@@ -45,6 +52,12 @@ void addEdge(GRAPH *graph, int src, int dest){
 
 }
 
+/**
+ * Creates a graph with the specified number of vertices.
+ * 
+ * @param n The number of vertices in the graph.
+ * @return A pointer to the created graph.
+ */
 GRAPH *createGraph(int n){
     GRAPH *graph=malloc(sizeof(GRAPH));
 
@@ -60,6 +73,12 @@ GRAPH *createGraph(int n){
     return graph;
 }
 
+/**
+ * Creates a stack with the specified size.
+ * 
+ * @param size The size of the stack.
+ * @return A pointer to the created stack.
+ */
 STACK *createStack(int size){
     STACK *stack=malloc(sizeof(STACK));
     stack->array=malloc(size*sizeof(int));
@@ -69,6 +88,11 @@ STACK *createStack(int size){
     return stack;
 }
 
+/**
+ * Prints the adjacency list representation of a graph.
+ * 
+ * @param graph The graph to print.
+ */
 void print_graph(GRAPH *graph)
 {
     int i; 
@@ -83,13 +107,25 @@ void print_graph(GRAPH *graph)
     }
 }
 
-
+/**
+ * Pushes an element onto the stack.
+ * 
+ * @param data The data to push onto the stack.
+ * @param stack The stack to push the data onto.
+ */
 void push(int data,STACK *stack)
 {
     stack->top=stack->top+1;
     stack->array[stack->top]=data;
 }
 
+/**
+ * Performs a depth-first search (DFS) traversal of a graph starting from a given vertex.
+ * 
+ * @param graph The graph to perform the DFS on.
+ * @param stack The stack used for DFS.
+ * @param vertex The starting vertex for DFS.
+ */
 void DFS(GRAPH *graph,STACK *stack, int vertex)
 {
     if(graph->head[vertex]!=NULL){
@@ -111,7 +147,14 @@ void DFS(GRAPH *graph,STACK *stack, int vertex)
     }
 }
 
-
+/**
+ * Inserts edges into a graph from a file.
+ * 
+ * @param graph The graph to insert the edges into.
+ * @param edgeNumber The number of edges to insert.
+ * @param vertexNumber The number of vertices in the graph.
+ * @param fin The file pointer to read the edges from.
+ */
 void insertEdges(GRAPH *graph,int edgeNumber,int vertexNumber, FILE *fin)
 {
     int src,dest;
@@ -123,7 +166,12 @@ void insertEdges(GRAPH *graph,int edgeNumber,int vertexNumber, FILE *fin)
     }
 }
 
-
+/**
+ * Clears the node list of a graph.
+ * 
+ * @param graph The graph to clear the node list of.
+ * @param vertexNumber The number of vertices in the graph.
+ */
 void clearNodeList(GRAPH *graph, int vertexNumber)
 {
     for (int i = 1; i <= vertexNumber;i++){
@@ -131,7 +179,13 @@ void clearNodeList(GRAPH *graph, int vertexNumber)
     }
 }  
 
-
+/**
+ * Determines if each vertex in a graph can be reached from any other vertex.
+ * 
+ * @param graph The graph to check.
+ * @param vertexNumber The number of vertices in the graph.
+ * @return An array indicating if each vertex can be reached (1) or not (0).
+ */
 int *canBeReached(GRAPH *graph, int vertexNumber)// 0 sau 1 daca poate fi sau nu ajuns
 {
     int *canBeReached = calloc(vertexNumber, sizeof(int)); 
